@@ -1,32 +1,37 @@
 const { Schema, model } = require('mongoose');
-const reactionSchema = require('./Reaction');
-const thoughtSchema = require('./Thought');
 
 const userSchema = new Schema(
     {
-        _id: {
-            type: String,
-            required: true,
-            max_length: 50,
-        },
         username: {
             type: String,
+            unique: true,
             required: true,
-            max_length: 50,
         },
         email: {
             type: String,
+            unique: true,
             required: true,
-            max_length: 50,
         },
-        __v: {
-            type: Number,
+        thoughts: [
+            {
+              type: Schema.Types.ObjectId,
+              ref: "Thought",
+            },
+          ],
+        friends: [{ type: Schema.Types.ObjectId, ref: 'User', },],
+    },
+    {
+        toJSON: {
+          virtuals: true,
         },
-        friendCount: {
-            type: Number,
-        },
-    }
-)
+        id: false,
+      }
+);
+
+
+userSchema.virtual("friendCount").get(function () {
+    return this.friends.length;
+  });
 
 const User = model('student', userSchema);
 

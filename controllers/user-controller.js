@@ -38,7 +38,8 @@ module.exports = {
     // Route: Update a User
 
     // Route: Delete a User
-    app.delete('/departments/:username', async (req, res) => {
+    async deleteUser(req, res){
+      app.delete('/users/:username', async (req, res) => {
         try {
           const result = await Department.findOneAndDelete({ username: req.params.username });
           res.status(200).json(result);
@@ -48,3 +49,4 @@ module.exports = {
           res.status(500).json({ error: 'Something went wrong' });
         }
       });
+    };
