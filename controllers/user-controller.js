@@ -1,69 +1,122 @@
-const User = require('../models/User');
+const { User } = require("../models");
 
-module.exports = {
-    // Route: Get all Users
-  async getUsers(req, res) {
+const userControllers = {
+// Route: Get all Users
+  async getAllUsers(req, res) {
     try {
-      const users = await User.find();
-      res.json(users);
+      const userData = await User.find().select("-__v");
+
+      res.json(userData);
     } catch (err) {
+      console.log(err);
       res.status(500).json(err);
     }
   },
-    //Route: Get a single User
+  // Route: Find single User
   async getSingleUser(req, res) {
     try {
-      const user = await User.findOne({ _id: req.params.userId })
-        .select('-__v');
+      const dbUserData = await User.findOne({ _id: req.params.userId })
+        .select("-__v")
+        .populate("friends")
+        .populate("thoughts");
 
-      if (!user) {
-        return res.status(404).json({ message: 'No user with that ID' });
+      if (!dbUserData) {
+        return res.status(404).json({ message: "No user with this id!" });
       }
 
-      res.json(user);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  },
-    // Route: create a new user
-  async createUser(req, res) {
-    try {
-      const dbUserData = await User.create(req.body);
       res.json(dbUserData);
     } catch (err) {
+      console.log(err);
       res.status(500).json(err);
     }
   },
-};
-    // Route: Update a User
-  async updateUser(req, res) {
+  // Route: Create User
+  async createUser(req, res) {
     try {
-      const user = await User.findOneAndUpdate(
-        {_id: req.params.userId },
-        { $set: req.body },
-        {runValidators: true, new: true }
-      );
-
-      if (!user) {
-        return res.status(404).json({message: 'No user with this id!'});
-      }
-
-      res.json(user);
+      const userData = await User.create(req.body);
+      res.json(userData);
     } catch (err) {
-      res.status (500).json(err);
+      console.log(err);
+      res.status(500).json(err);
     }
   },
-
-    // Route: Delete a User
-    async deleteUser(req, res){
-      app.delete('/users/:username', async (req, res) => {
-        try {
-          const result = await Department.findOneAndDelete({ username: req.params.username });
-          res.status(200).json(result);
-          console.log(`Deleted: ${result}`);
-        } catch (err) {
-          console.log('Uh Oh, something went wrong');
-          res.status(500).json({ error: 'Something went wrong' });
+  // Route: Update a User
+  async updateUser(req, res) {
+    try {
+      const dbUserData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        {
+          $set: req.body,
+        },
+        {
+          runValidators: true,
+          new: true,
         }
+      );
+
+      if (!dbUserData) {
+        return res.status(404).json({ message: "No user with this id!" });
+      }
+
+      res.json(dbUserData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
+  // Route: Delete a User
+  async deleteUser(req, res) {
+    try {
+      const dbUserData = await User.findOneAndDelete({
+        _id: req.params.userId,
       });
-    };
+
+      if (!dbUserData) {
+        return res.status(404).json({ message: "No user with this id!" });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
+    // Route: Add Friend
+    async addFriend(req, res) {
+      try {
+        const userData = await User.findOneAndUpdate(
+          { _id: req.params.userId },
+          { $addToSet: { friends: req.params.friendId } },
+          { new: true }
+        );
+  
+        if (!userData) {
+          return res.status(404).json({ message: "No user with this id!" });
+        }
+  
+        res.json(userData);
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    },
+    // Route: Remove Friend
+    async removeFriend(req, res) {
+      try {
+        const dbUserData = await User.findOneAndUpdate(
+          { _id: req.params.userId },
+          { $pull: { friends: req.params.friendId } },
+          { new: true }
+        );
+  
+        if (!dbUserData) {
+          return res.status(404).json({ message: "No user with this id!" });
+        }
+  
+        res.json(dbUserData);
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    },
+};
+
+module.exports = userControllers;
