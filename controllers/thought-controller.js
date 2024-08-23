@@ -72,11 +72,11 @@ const thoughtController = {
   // Route: Delete a thought
   async deleteThought(req, res) {
     try {
-      const dbThoughtData = await Thought.findOneAndRemove({
+      const thoughtData = await Thought.findOneAndRemove({
         _id: req.params.thoughtId,
       });
 
-      if (!dbThoughtData) {
+      if (!thoughtData) {
         return res.status(404).json({ message: "No thought with this id!" });
       }
 
@@ -102,17 +102,17 @@ const thoughtController = {
   async addReaction(req, res) {
     try {
         // updates relevant Thought with reaction
-      const dbThoughtData = await Thought.findOneAndUpdate(
+      const thoughtData = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
         { $addToSet: { reactions: req.body } },
         { runValidators: true, new: true }
       );
 
-      if (!dbThoughtData) {
+      if (!thoughtData) {
         return res.status(404).json({ message: "No thought with this id!" });
       }
 
-      res.json(dbThoughtData);
+      res.json(thoughtData);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -122,17 +122,17 @@ const thoughtController = {
   async removeReaction(req, res) {
     try {
         // enters Thought properties to remove reaction from array
-      const dbThoughtData = await Thought.findOneAndUpdate(
+      const thoughtData = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
         { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       );
-
-      if (!dbThoughtData) {
+      console.log(thoughtData);
+      if (!thoughtData) {
         return res.status(404).json({ message: "No thought with this id!" });
       }
 
-      res.json(dbThoughtData);
+      res.json(thoughtData);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);

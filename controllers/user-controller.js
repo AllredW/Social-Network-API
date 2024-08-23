@@ -15,16 +15,16 @@ const userControllers = {
   // Route: Find single User
   async getSingleUser(req, res) {
     try {
-      const dbUserData = await User.findOne({ _id: req.params.userId })
+      const userData = await User.findOne({ _Id: req.params.userId })
         .select("-__v")
         .populate("friends")
         .populate("thoughts");
 
-      if (!dbUserData) {
+      if (!userData) {
         return res.status(404).json({ message: "No user with this id!" });
       }
 
-      res.json(dbUserData);
+      res.json(userData);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -44,12 +44,12 @@ const userControllers = {
   async updateUser(req, res) {
     try {
       const dbUserData = await User.findOneAndUpdate(
-        { _id: req.params.userId },
+        { _Id: req.params.userId },
         {
           $set: req.body,
         },
         {
-          runValidators: true,
+          runValIdators: true,
           new: true,
         }
       );
@@ -68,7 +68,7 @@ const userControllers = {
   async deleteUser(req, res) {
     try {
       const dbUserData = await User.findOneAndDelete({
-        _id: req.params.userId,
+        _Id: req.params.userId,
       });
 
       if (!dbUserData) {
@@ -85,7 +85,7 @@ const userControllers = {
         const userData = await User.findOneAndUpdate(
           { _id: req.params.userId },
           { $addToSet: { friends: req.params.friendId } },
-          { new: true }
+          { runValidators: true, new: true }
         );
   
         if (!userData) {
