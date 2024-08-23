@@ -124,7 +124,7 @@ const thoughtController = {
         // enters Thought properties to remove reaction from array
       const thoughtData = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $pull: { reactions: { reactionId: req.params.reactionId } } },
+        { $pull: { reactions: { rectionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       );
       console.log(thoughtData);

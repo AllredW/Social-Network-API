@@ -15,7 +15,7 @@ const userControllers = {
   // Route: Find single User
   async getSingleUser(req, res) {
     try {
-      const userData = await User.findOne({ _Id: req.params.userId })
+      const userData = await User.findOne({ _id: req.params.userId })
         .select("-__v")
         .populate("friends")
         .populate("thoughts");
@@ -43,22 +43,22 @@ const userControllers = {
   // Route: Update a User
   async updateUser(req, res) {
     try {
-      const dbUserData = await User.findOneAndUpdate(
-        { _Id: req.params.userId },
+      const userData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
         {
           $set: req.body,
         },
         {
-          runValIdators: true,
+          runValidators: true,
           new: true,
         }
       );
 
-      if (!dbUserData) {
+      if (!userData) {
         return res.status(404).json({ message: "No user with this id!" });
       }
 
-      res.json(dbUserData);
+      res.json(userData);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -67,11 +67,11 @@ const userControllers = {
   // Route: Delete a User
   async deleteUser(req, res) {
     try {
-      const dbUserData = await User.findOneAndDelete({
-        _Id: req.params.userId,
+      const userData = await User.findOneAndDelete({
+        _id: req.params.userId,
       });
 
-      if (!dbUserData) {
+      if (!userData) {
         return res.status(404).json({ message: "No user with this id!" });
       }
     } catch (err) {
@@ -101,17 +101,17 @@ const userControllers = {
     // Route: Remove Friend
     async removeFriend(req, res) {
       try {
-        const dbUserData = await User.findOneAndUpdate(
+        const userData = await User.findOneAndUpdate(
           { _id: req.params.userId },
           { $pull: { friends: req.params.friendId } },
           { new: true }
         );
   
-        if (!dbUserData) {
+        if (!userData) {
           return res.status(404).json({ message: "No user with this id!" });
         }
   
-        res.json(dbUserData);
+        res.json(userData);
       } catch (err) {
         console.log(err);
         res.status(500).json(err);
